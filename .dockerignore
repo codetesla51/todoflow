@@ -1,5 +1,0 @@
-main
-.git
-.env
-*.db
-dump.rdb
