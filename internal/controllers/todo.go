@@ -39,7 +39,7 @@ func CreateTodo(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create todo"})
 		return
 	}
-	services.DeleteCache(fmt.Sprintf("todos:user:%d", userID))
+	services.DeletePattern(fmt.Sprintf("todos:user:%d:*", userID))
 	services.DeleteCache(fmt.Sprintf("user:%d", userID))
 	c.JSON(http.StatusCreated, gin.H{"message": "Todo created successfully", "todo": todo})
 }
@@ -115,7 +115,7 @@ func UpdateTodo(c *gin.Context) {
 	todo.Description = req.Description
 
 	database.DB.Save(&todo)
-	services.DeleteCache(fmt.Sprintf("todos:user:%d", userID))
+	services.DeletePattern(fmt.Sprintf("todos:user:%d:*", userID))
 	services.DeleteCache(fmt.Sprintf("user:%d", userID))
 	services.DeleteCache(fmt.Sprintf("todo:%d:user:%d", todo.ID, userID))
 	c.JSON(200, todo)
@@ -139,7 +139,7 @@ func UpdateTodoStatus(c *gin.Context) {
 	todo.Status = req.Status
 
 	database.DB.Save(&todo)
-	services.DeleteCache(fmt.Sprintf("todos:user:%d", userID))
+	services.DeletePattern(fmt.Sprintf("todos:user:%d:*", userID))
 	services.DeleteCache(fmt.Sprintf("user:%d", userID))
 	services.DeleteCache(fmt.Sprintf("todo:%d:user:%d", todo.ID, userID))
 
@@ -155,7 +155,7 @@ func DeleteTodo(c *gin.Context) {
 		c.JSON(404, gin.H{"error": "Todo not found"})
 		return
 	}
-	services.DeleteCache(fmt.Sprintf("todos:user:%d", userID))
+	services.DeletePattern(fmt.Sprintf("todos:user:%d:*", userID))
 	services.DeleteCache(fmt.Sprintf("user:%d", userID))
 	services.DeleteCache(fmt.Sprintf("todo:%s:user:%d", todoID, userID))
 

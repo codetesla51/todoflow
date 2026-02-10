@@ -15,6 +15,7 @@ import (
 	"github.com/codetesla51/todoapi/internal/middleware"
 	"github.com/codetesla51/todoapi/internal/models"
 	"github.com/codetesla51/todoapi/internal/services"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,6 +25,16 @@ func main() {
 	services.ConnectRedis()
 	database.Migrate(&models.User{}, &models.Todo{})
 	r := gin.Default()
+
+	// CORS configuration
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length", "X-RateLimit-Limit", "X-RateLimit-Remaining", "Retry-After"},
+		AllowCredentials: true,
+	}))
+
 	middleware.InitRateLimiter()
 
 	// Global protection for simple DOS

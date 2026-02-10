@@ -52,3 +52,12 @@ func GetCache(key string, dest interface{}) error {
 func DeleteCache(key string) error {
 	return RedisClient.Del(ctx, key).Err()
 }
+func DeletePattern(pattern string) error {
+	iter := RedisClient.Scan(ctx, 0, pattern, 0).Iterator()
+	for iter.Next(ctx) {
+		if err := RedisClient.Del(ctx, iter.Val()).Err(); err != nil {
+			return err
+		}
+	}
+	return iter.Err()
+}
