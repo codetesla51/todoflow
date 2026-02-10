@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/codetesla51/limitz/algorithms"
 	"github.com/codetesla51/limitz/store"
 	"github.com/gin-gonic/gin"
 )
 
-var limiter *algorithms.TokenBucket
+var (
+	ipLimiter   algorithms.RateLimiter
+	userLimiter algorithms.RateLimiter
+)
 
 func InitRateLimiter() {
 	redisHost := os.Getenv("REDIS_HOST")
@@ -29,15 +33,15 @@ func InitRateLimiter() {
 		log.Fatalf("Failed to connect to rate limit store: %v", err)
 	}
 
-	// Initialize the limiter once (100 capacity, 10 tokens per second)
-	limiter = algorithms.NewTokenBucket(100, 10, s)
+	ipLimiter = algorithms.NewTokenBucket(100, 10, s)
+
+	userLimiter = algorithms.NewSlidingWindowCounter(1000, 1*time.Hour, s)
 }
 
-// RateLimitByIP is good for /auth routes or general server protection
 func RateLimitByIP() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		key := fmt.Sprintf("rate_limit:ip:%s", c.ClientIP())
-		if !checkLimit(c, key) {
+		if !checkLimit(c, ipLimiter, key) {
 			return
 		}
 		c.Next()
@@ -47,23 +51,25 @@ func RateLimitByIP() gin.HandlerFunc {
 func RateLimitByUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID, exists := c.Get("user_id")
+		var key string
+		var limiter algorithms.RateLimiter
+
 		if !exists {
-			// Fallback to IP if for some reason user_id isn't there
-			key := fmt.Sprintf("rate_limit:ip:%s", c.ClientIP())
-			if !checkLimit(c, key) {
-				return
-			}
+			key = fmt.Sprintf("rate_limit:ip:%s", c.ClientIP())
+			limiter = ipLimiter
 		} else {
-			key := fmt.Sprintf("rate_limit:user:%v", userID)
-			if !checkLimit(c, key) {
-				return
-			}
+			key = fmt.Sprintf("rate_limit:user:%v", userID)
+			limiter = userLimiter
+		}
+
+		if !checkLimit(c, limiter, key) {
+			return
 		}
 		c.Next()
 	}
 }
 
-func checkLimit(c *gin.Context, key string) bool {
+func checkLimit(c *gin.Context, limiter algorithms.RateLimiter, key string) bool {
 	if limiter == nil {
 		c.JSON(500, gin.H{"error": "Rate limiter not initialized"})
 		c.Abort()
@@ -77,8 +83,15 @@ func checkLimit(c *gin.Context, key string) bool {
 		return false
 	}
 
+	c.Header("X-RateLimit-Limit", fmt.Sprintf("%d", result.Limit))
+	c.Header("X-RateLimit-Remaining", fmt.Sprintf("%d", result.Remaining))
+
 	if !result.Allowed {
-		c.JSON(429, gin.H{"error": "Too Many Requests"})
+		c.Header("Retry-After", fmt.Sprintf("%d", int(result.RetryAfter.Seconds())))
+		c.JSON(429, gin.H{
+			"error":       "Too Many Requests",
+			"retry_after": result.RetryAfter.String(),
+		})
 		c.Abort()
 		return false
 	}
