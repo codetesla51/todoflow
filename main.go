@@ -17,19 +17,24 @@ func main() {
 	database.Migrate(&models.User{}, &models.Todo{})
 	r := gin.Default()
 	middleware.InitRateLimiter()
-	r.Use(middleware.RateLimit())
+
+	// Global protection for simple DOS
+	r.Use(middleware.RateLimitByIP())
+
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong"})
 	})
+
 	auth := r.Group("/auth")
 	{
 		auth.POST("/register", controllers.CreateUser)
 		auth.POST("/login", controllers.LoginUser)
-
 	}
 
 	protected := r.Group("/api")
 	protected.Use(middleware.AuthRequired())
+	// Use User-based limiting for logged-in users
+	protected.Use(middleware.RateLimitByUser())
 	{
 		protected.GET("/profile", controllers.GetUser)
 		protected.POST("/todos", controllers.CreateTodo)
