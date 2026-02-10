@@ -1,6 +1,14 @@
 package main
 
 import (
+	"context"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/codetesla51/todoapi/internal/config"
 	"github.com/codetesla51/todoapi/internal/controllers"
 	"github.com/codetesla51/todoapi/internal/database"
@@ -41,7 +49,31 @@ func main() {
 		protected.GET("/todos", controllers.GetMyTodos)
 		protected.GET("/todos/:id", controllers.GetTodo)
 		protected.PUT("/todos/:id", controllers.UpdateTodo)
+		protected.PATCH("/todos/:id/status", controllers.UpdateTodoStatus)
 		protected.DELETE("/todos/:id", controllers.DeleteTodo)
 	}
-	r.Run(":8080")
+
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: r,
+	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+	log.Println("Server started on http://localhost:8080")
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server forced to shutdown:", err)
+	}
+
+	log.Println("Server exiting")
 }

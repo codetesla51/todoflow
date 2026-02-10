@@ -14,13 +14,21 @@ var RedisClient *redis.Client
 var ctx = context.Background()
 
 func ConnectRedis() {
-	redis_addr := os.Getenv("REDIS_HOST")
-	redis_port := os.Getenv("REDIS_PORT")
-	redis_password := os.Getenv("REDIS_PASSWORD")
+	redisAddr := os.Getenv("REDIS_HOST")
+	if redisAddr == "" {
+		redisAddr = "localhost"
+	}
+	redisPort := os.Getenv("REDIS_PORT")
+	if redisPort == "" {
+		redisPort = "6379"
+	}
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     redis_addr + ":" + redis_port,
-		Password: redis_password,
-		DB:       0})
+		Addr:     redisAddr + ":" + redisPort,
+		Password: redisPassword,
+		DB:       0,
+	})
 	_, err := RedisClient.Ping(ctx).Result()
 	if err != nil {
 		log.Fatal("Failed to connect to Redis:", err)

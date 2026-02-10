@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/codetesla51/todoapi/internal/database"
@@ -46,14 +47,30 @@ func CreateTodo(c *gin.Context) {
 func GetMyTodos(c *gin.Context) {
 	userID := c.GetUint("user_id")
 
+	// Pagination parameters
+	limitStr := c.DefaultQuery("limit", "10")
+	pageStr := c.DefaultQuery("page", "1")
+
+	limit, _ := strconv.Atoi(limitStr)
+	page, _ := strconv.Atoi(pageStr)
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
 	var todos []models.Todo
-	cacheKey := fmt.Sprintf("todos:user:%d", userID)
+	cacheKey := fmt.Sprintf("todos:user:%d:limit:%d:page:%d", userID, limit, page)
 	err := services.GetCache(cacheKey, &todos)
 	if err == nil {
 		c.JSON(200, todos)
 		return
 	}
-	database.DB.Where("user_id = ?", userID).Find(&todos)
+
+	database.DB.Where("user_id = ?", userID).Limit(limit).Offset(offset).Find(&todos)
 	services.SetCache(cacheKey, todos, 10*time.Minute)
 	c.JSON(200, todos)
 }
