@@ -12,8 +12,10 @@ import (
 )
 
 var (
-	ipLimiter   algorithms.RateLimiter
-	userLimiter algorithms.RateLimiter
+	ipLimiter     algorithms.RateLimiter
+	userLimiter   algorithms.RateLimiter
+	dbIpLimiter   algorithms.RateLimiter
+	dbUserLimiter algorithms.RateLimiter
 )
 
 func InitRateLimiter() {
@@ -27,21 +29,43 @@ func InitRateLimiter() {
 	}
 	redisPassword := os.Getenv("REDIS_PASSWORD")
 
-	// Initialize the store once
-	s, err := store.NewRedisStore(redisHost+":"+redisPort, "", redisPassword)
-	if err != nil {
-		log.Fatalf("Failed to connect to rate limit store: %v", err)
+	// Initialize Redis store
+	redisStore, err := store.NewRedisStore(redisHost+":"+redisPort, "", redisPassword)
+	if err == nil {
+		ipLimiter = algorithms.NewTokenBucket(100, 10, redisStore)
+		userLimiter = algorithms.NewSlidingWindowCounter(1000, 1*time.Hour, redisStore)
+		log.Println("Redis rate limiter initialized")
+	} else {
+		log.Printf("Failed to connect to Redis for rate limiting: %v", err)
 	}
 
-	ipLimiter = algorithms.NewTokenBucket(100, 10, s)
+	// Initialize Database store as fallback
+	dbAddr := os.Getenv("DATABASE_URL")
+	if dbAddr != "" {
+		dbStore, err := store.NewDatabaseStore(dbAddr)
+		if err == nil {
+			dbIpLimiter = algorithms.NewTokenBucket(100, 10, dbStore)
+			dbUserLimiter = algorithms.NewSlidingWindowCounter(1000, 1*time.Hour, dbStore)
+			log.Println("Database fallback rate limiter initialized")
 
-	userLimiter = algorithms.NewSlidingWindowCounter(1000, 1*time.Hour, s)
+			go func() {
+				ticker := time.NewTicker(10 * time.Minute)
+				for range ticker.C {
+					if err := dbStore.CleanupExpired(); err != nil {
+						log.Printf("DB rate limit cleanup error: %v", err)
+					}
+				}
+			}()
+		} else {
+			log.Printf("Failed to connect to Database for rate limiting: %v", err)
+		}
+	}
 }
 
 func RateLimitByIP() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		key := fmt.Sprintf("rate_limit:ip:%s", c.ClientIP())
-		if !checkLimit(c, ipLimiter, key) {
+		if !checkLimit(c, ipLimiter, dbIpLimiter, key) {
 			return
 		}
 		c.Next()
@@ -52,37 +76,52 @@ func RateLimitByUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID, exists := c.Get("user_id")
 		var key string
-		var limiter algorithms.RateLimiter
+		var primary, fallback algorithms.RateLimiter
 
 		if !exists {
 			key = fmt.Sprintf("rate_limit:ip:%s", c.ClientIP())
-			limiter = ipLimiter
+			primary = ipLimiter
+			fallback = dbIpLimiter
 		} else {
 			key = fmt.Sprintf("rate_limit:user:%v", userID)
-			limiter = userLimiter
+			primary = userLimiter
+			fallback = dbUserLimiter
 		}
 
-		if !checkLimit(c, limiter, key) {
+		if !checkLimit(c, primary, fallback, key) {
 			return
 		}
 		c.Next()
 	}
 }
 
-func checkLimit(c *gin.Context, limiter algorithms.RateLimiter, key string) bool {
-	if limiter == nil {
-		c.JSON(500, gin.H{"error": "Rate limiter not initialized"})
-		c.Abort()
-		return false
+func checkLimit(c *gin.Context, primary algorithms.RateLimiter, fallback algorithms.RateLimiter, key string) bool {
+	var result algorithms.Result
+	var err error
+
+	// Try primary (Redis)
+	if primary != nil {
+		result, err = primary.Allow(key)
+		if err == nil {
+			return handleResult(c, result)
+		}
+		log.Printf("Primary rate limiter error: %v, attempting fallback", err)
 	}
 
-	result, err := limiter.Allow(key)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to check rate limit"})
-		c.Abort()
-		return false
+	// Fallback to DB
+	if fallback != nil {
+		result, err = fallback.Allow(key)
+		if err == nil {
+			return handleResult(c, result)
+		}
+		log.Printf("Fallback rate limiter error: %v", err)
 	}
 
+	// Both failed, fail-open
+	return true
+}
+
+func handleResult(c *gin.Context, result algorithms.Result) bool {
 	c.Header("X-RateLimit-Limit", fmt.Sprintf("%d", result.Limit))
 	c.Header("X-RateLimit-Remaining", fmt.Sprintf("%d", result.Remaining))
 

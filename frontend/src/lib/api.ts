@@ -1,6 +1,7 @@
 import { auth } from '$lib/stores/auth';
+import { env } from '$env/dynamic/public';
 
-const API_BASE = 'http://localhost:8080';
+const API_BASE = env.PUBLIC_API_URL || 'http://localhost:8080';
 
 async function request(endpoint: string, options: RequestInit = {}) {
 	const token = auth.getToken();
