@@ -9,7 +9,7 @@ import (
 
 func LoadEnv() {
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file:", err)
+		log.Println("No .env file found, using system environment variables")
 	}
 	requiredVars := []string{"DATABASE_URL", "JWT_SECRET"}
 	for _, v := range requiredVars {
