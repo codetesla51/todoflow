@@ -29,7 +29,7 @@
 	class="sticky top-0 z-50 border-b transition-all duration-200"
 	style="border-color: var(--border-color); background: var(--bg-primary);"
 >
-	<div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
+	<div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
 		<a href="/" class="flex items-center gap-2 group">
 			<span class="flex h-7 w-7 items-center justify-center rounded-md bg-accent-500 transition-transform duration-200 group-hover:scale-105">
 				<svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">

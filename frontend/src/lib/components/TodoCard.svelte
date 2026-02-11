@@ -55,7 +55,7 @@
 </script>
 
 <div
-	class="group relative rounded-lg border p-4 transition-colors duration-150"
+	class="group relative rounded-lg border p-3.5 transition-colors duration-150 sm:p-4"
 	style="border-color: var(--border-color); background: var(--bg-card);"
 	class:opacity-60={todo.status === 'completed'}
 >
@@ -64,7 +64,7 @@
 		<button
 			onclick={toggleStatus}
 			disabled={loading}
-			class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors duration-150 cursor-pointer"
+			class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border-2 transition-colors duration-150 cursor-pointer sm:h-5 sm:w-5"
 			class:bg-accent-500={todo.status === 'completed'}
 			class:border-accent-500={todo.status === 'completed'}
 			style={todo.status !== 'completed' ? 'border-color: var(--border-hover);' : ''}
@@ -109,10 +109,10 @@
 		</div>
 
 		<!-- Actions -->
-		<div class="flex shrink-0 items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+		<div class="flex shrink-0 items-center gap-1 opacity-100 sm:opacity-0 sm:transition-opacity sm:duration-200 sm:group-hover:opacity-100">
 			<button
 				onclick={() => onEdit(todo)}
-				class="flex h-8 w-8 items-center justify-center rounded-lg transition-colors duration-200 cursor-pointer"
+				class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-200 cursor-pointer active:scale-95 sm:h-8 sm:w-8"
 				style="color: var(--text-muted);"
 				onmouseenter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--bg-hover)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)'; }}
 				onmouseleave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; }}
@@ -125,7 +125,7 @@
 			<button
 				onclick={handleDelete}
 				disabled={deleting}
-				class="flex h-8 w-8 items-center justify-center rounded-lg transition-colors duration-200 cursor-pointer text-red-400 hover:bg-red-500/10 hover:text-red-500"
+				class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-200 cursor-pointer text-red-400 active:scale-95 hover:bg-red-500/10 hover:text-red-500 sm:h-8 sm:w-8"
 				aria-label="Delete todo"
 			>
 				{#if deleting}

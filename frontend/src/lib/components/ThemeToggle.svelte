@@ -7,7 +7,7 @@
 
 <button
 	onclick={() => theme.toggle()}
-	class="relative flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-300 hover:scale-110 cursor-pointer"
+	class="relative flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer sm:h-10 sm:w-10"
 	style="border-color: var(--border-color); background: var(--bg-secondary);"
 	aria-label="Toggle theme"
 >

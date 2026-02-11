@@ -34,7 +34,7 @@
 	}
 </script>
 
-<div class="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12">
+<div class="flex min-h-[calc(100vh-8rem)] items-center justify-center px-5 py-8 sm:px-4 sm:py-12">
 	<div class="w-full max-w-sm">
 		<div class="mb-7">
 			<h1 class="text-2xl font-bold" style="color: var(--text-primary);">Sign in</h1>

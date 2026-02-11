@@ -11,27 +11,27 @@
 	});
 </script>
 
-<section class="mx-auto max-w-5xl px-6">
+<section class="mx-auto max-w-5xl px-4 sm:px-6">
 	<!-- Hero -->
-	<div class="flex flex-col items-center pt-20 pb-16 sm:pt-28 sm:pb-20 lg:pt-36">
-		<h1 class="text-center text-4xl font-bold tracking-tight sm:text-5xl lg:text-[3.5rem] lg:leading-[1.15]" style="color: var(--text-primary);">
+	<div class="flex flex-col items-center pt-16 pb-12 sm:pt-28 sm:pb-20 lg:pt-36">
+		<h1 class="text-center text-3xl font-bold tracking-tight sm:text-5xl lg:text-[3.5rem] lg:leading-[1.15]" style="color: var(--text-primary);">
 			Get things done,<br />without the noise.
 		</h1>
 
-		<p class="mx-auto mt-5 max-w-lg text-center text-base leading-relaxed" style="color: var(--text-secondary);">
+		<p class="mx-auto mt-4 max-w-lg text-center text-sm leading-relaxed sm:mt-5 sm:text-base" style="color: var(--text-secondary);">
 			A minimal task manager that stays out of your way. Fast backend, clean interface, zero clutter.
 		</p>
 
-		<div class="mt-9 flex items-center gap-3">
+		<div class="mt-7 flex w-full flex-col items-center gap-3 sm:mt-9 sm:w-auto sm:flex-row">
 			<a
 				href="/register"
-				class="rounded-lg bg-accent-500 px-6 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-accent-600 active:scale-[0.97]"
+				class="w-full rounded-lg bg-accent-500 px-6 py-2.5 text-center text-sm font-semibold text-white transition-all duration-200 hover:bg-accent-600 active:scale-[0.97] sm:w-auto"
 			>
 				Get started
 			</a>
 			<a
 				href="/login"
-				class="rounded-lg border px-6 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-[0.97]"
+				class="w-full rounded-lg border px-6 py-2.5 text-center text-sm font-semibold transition-all duration-200 active:scale-[0.97] sm:w-auto"
 				style="border-color: var(--border-color); color: var(--text-primary);"
 			>
 				Sign in
@@ -43,8 +43,8 @@
 	<div class="mx-auto h-px w-full max-w-3xl" style="background: var(--border-color);"></div>
 
 	<!-- Features -->
-	<div class="grid gap-0 sm:grid-cols-3 py-16 sm:py-20">
-		<div class="flex flex-col items-center px-6 py-6 text-center sm:border-r" style="border-color: var(--border-color);">
+	<div class="grid gap-0 py-12 sm:grid-cols-3 sm:py-20">
+		<div class="flex flex-col items-center border-b px-6 py-6 text-center sm:border-b-0 sm:border-r" style="border-color: var(--border-color);">
 			<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg" style="background: var(--bg-tertiary);">
 				<svg class="h-5 w-5 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -56,7 +56,7 @@
 			</p>
 		</div>
 
-		<div class="flex flex-col items-center px-6 py-6 text-center sm:border-r" style="border-color: var(--border-color);">
+		<div class="flex flex-col items-center border-b px-6 py-6 text-center sm:border-b-0 sm:border-r" style="border-color: var(--border-color);">
 			<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg" style="background: var(--bg-tertiary);">
 				<svg class="h-5 w-5 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

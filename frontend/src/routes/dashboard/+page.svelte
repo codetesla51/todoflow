@@ -132,20 +132,20 @@
 	}
 </script>
 
-<div class="mx-auto max-w-5xl px-6 py-8">
+<div class="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
 	<!-- Header Section -->
-	<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+	<div class="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
 		<div>
 			<p class="text-sm" style="color: var(--text-muted);">
 				{getGreeting()},
 			</p>
-			<h1 class="mt-1 text-2xl font-semibold tracking-tight" style="color: var(--text-primary);">
+			<h1 class="mt-1 text-xl font-semibold tracking-tight sm:text-2xl" style="color: var(--text-primary);">
 				{username}
 			</h1>
 		</div>
 		<button
 			onclick={openCreate}
-			class="inline-flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-accent-600 cursor-pointer"
+			class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-500 px-4 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-accent-600 active:scale-[0.98] cursor-pointer sm:w-auto sm:py-2"
 		>
 			<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
 				<path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -155,21 +155,21 @@
 	</div>
 
 	<!-- Stats -->
-	<div class="mb-6 grid gap-3 grid-cols-4">
-		<div class="rounded-lg border p-4" style="border-color: var(--border-color); background: var(--bg-card);">
-			<p class="text-2xl font-semibold tabular-nums" style="color: var(--text-primary);">{stats.total}</p>
+	<div class="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
+		<div class="rounded-lg border p-3 sm:p-4" style="border-color: var(--border-color); background: var(--bg-card);">
+			<p class="text-xl font-semibold tabular-nums sm:text-2xl" style="color: var(--text-primary);">{stats.total}</p>
 			<p class="text-xs" style="color: var(--text-muted);">Total</p>
 		</div>
-		<div class="rounded-lg border p-4" style="border-color: var(--border-color); background: var(--bg-card);">
-			<p class="text-2xl font-semibold tabular-nums" style="color: var(--text-primary);">{stats.pending}</p>
+		<div class="rounded-lg border p-3 sm:p-4" style="border-color: var(--border-color); background: var(--bg-card);">
+			<p class="text-xl font-semibold tabular-nums sm:text-2xl" style="color: var(--text-primary);">{stats.pending}</p>
 			<p class="text-xs" style="color: var(--text-muted);">Pending</p>
 		</div>
-		<div class="rounded-lg border p-4" style="border-color: var(--border-color); background: var(--bg-card);">
-			<p class="text-2xl font-semibold tabular-nums" style="color: var(--text-primary);">{stats.completed}</p>
+		<div class="rounded-lg border p-3 sm:p-4" style="border-color: var(--border-color); background: var(--bg-card);">
+			<p class="text-xl font-semibold tabular-nums sm:text-2xl" style="color: var(--text-primary);">{stats.completed}</p>
 			<p class="text-xs" style="color: var(--text-muted);">Done</p>
 		</div>
-		<div class="rounded-lg border p-4" style="border-color: var(--border-color); background: var(--bg-card);">
-			<p class="text-2xl font-semibold tabular-nums" style="color: var(--text-primary);">{stats.percentage}%</p>
+		<div class="rounded-lg border p-3 sm:p-4" style="border-color: var(--border-color); background: var(--bg-card);">
+			<p class="text-xl font-semibold tabular-nums sm:text-2xl" style="color: var(--text-primary);">{stats.percentage}%</p>
 			<p class="text-xs" style="color: var(--text-muted);">Progress</p>
 		</div>
 	</div>
@@ -187,11 +187,11 @@
 
 	<!-- Filters & Search -->
 	<div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-		<div class="flex items-center gap-1 rounded-lg border p-0.5" style="border-color: var(--border-color); background: var(--bg-secondary);">
+		<div class="flex w-full items-center gap-1 overflow-x-auto rounded-lg border p-0.5 sm:w-auto" style="border-color: var(--border-color); background: var(--bg-secondary); -webkit-overflow-scrolling: touch;">
 			{#each [['all', 'All'], ['pending', 'Pending'], ['completed', 'Done']] as [value, label]}
 				<button
 					onclick={() => (filter = value as typeof filter)}
-					class="rounded-md px-3.5 py-1.5 text-sm font-medium transition-colors duration-150 cursor-pointer"
+					class="flex-1 whitespace-nowrap rounded-md px-3.5 py-1.5 text-sm font-medium transition-colors duration-150 cursor-pointer sm:flex-none"
 					style={filter === value
 						? 'background: var(--bg-card); color: var(--text-primary);'
 						: 'color: var(--text-muted);'}
@@ -201,7 +201,7 @@
 			{/each}
 		</div>
 
-		<div class="relative">
+		<div class="relative w-full sm:w-auto">
 			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
 				<svg class="h-4 w-4" style="color: var(--text-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -211,7 +211,7 @@
 				type="text"
 				bind:value={searchQuery}
 				placeholder="Search tasks..."
-				class="w-full rounded-lg border py-2 pl-9 pr-4 text-sm outline-none transition-colors duration-150 focus:border-accent-500 sm:w-56"
+				class="w-full rounded-lg border py-2.5 pl-9 pr-4 text-sm outline-none transition-colors duration-150 focus:border-accent-500 sm:w-56 sm:py-2"
 				style="border-color: var(--border-color); background: var(--bg-input); color: var(--text-primary);"
 			/>
 		</div>

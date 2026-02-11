@@ -15,8 +15,8 @@
 	<main class="flex-1">
 		{@render children()}
 	</main>
-	<footer class="border-t py-6" style="border-color: var(--border-color);">
-		<div class="mx-auto max-w-6xl px-6">
+	<footer class="border-t py-5 sm:py-6" style="border-color: var(--border-color);">
+		<div class="mx-auto max-w-6xl px-4 sm:px-6">
 			<p class="text-center text-sm" style="color: var(--text-muted);">
 				&copy; {new Date().getFullYear()} TodoFlow. Built with Svelte & Go.
 			</p>
