@@ -4,12 +4,14 @@
 	interface Props {
 		show?: boolean;
 		editingTodo?: Todo | null;
+		submitting?: boolean;
 		onClose: () => void;
 		onSubmit: (title: string, description: string) => void;
 	}
 	let {
 		show = false,
 		editingTodo = null,
+		submitting = false,
 		onClose,
 		onSubmit
 	}: Props = $props();
@@ -94,7 +96,8 @@
 							type="text"
 							bind:value={title}
 							placeholder="What needs to be done?"
-							class="w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-colors duration-150 focus:border-accent-500"
+							disabled={submitting}
+							class="w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-colors duration-150 focus:border-accent-500 disabled:opacity-50"
 							style="border-color: var(--border-color); background: var(--bg-input); color: var(--text-primary);"
 							required
 						/>
@@ -108,7 +111,8 @@
 							bind:value={description}
 							placeholder="Add some details..."
 							rows="3"
-							class="w-full resize-none rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-colors duration-150 focus:border-accent-500"
+							disabled={submitting}
+							class="w-full resize-none rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-colors duration-150 focus:border-accent-500 disabled:opacity-50"
 							style="border-color: var(--border-color); background: var(--bg-input); color: var(--text-primary);"
 						></textarea>
 					</div>
@@ -118,17 +122,26 @@
 					<button
 						type="button"
 						onclick={onClose}
-						class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors duration-150 cursor-pointer"
+						disabled={submitting}
+						class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
 						style="border-color: var(--border-color); color: var(--text-secondary); background: var(--bg-secondary);"
 					>
 						Cancel
 					</button>
 					<button
 						type="submit"
-						disabled={!title.trim()}
-						class="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+						disabled={!title.trim() || submitting}
+						class="inline-flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 					>
-						{editingTodo ? 'Save' : 'Create'}
+						{#if submitting}
+							<svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+							</svg>
+							{editingTodo ? 'Saving...' : 'Creating...'}
+						{:else}
+							{editingTodo ? 'Save' : 'Create'}
+						{/if}
 					</button>
 				</div>
 			</form>

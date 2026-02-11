@@ -1,5 +1,7 @@
 # TodoAPI Full-Stack Application
 
+[![Demo](https://img.shields.io/badge/Demo-Live-green)](https://todoflow-black.vercel.app/)
+
 A production-ready Todo management system built with a high-performance Go backend and a Svelte frontend. This project implements advanced rate limiting with distributed state, fail-over mechanisms, and multi-layer caching.
 
 ## Architecture Overview

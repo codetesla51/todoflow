@@ -12,6 +12,7 @@
 	import TodoModal from '$lib/components/TodoModal.svelte';
 
 	let loading = $state(true);
+	let submitting = $state(false);
 	let todoList: Todo[] = $state([]);
 	let showModal = $state(false);
 	let editingTodo: Todo | null = $state(null);
@@ -105,6 +106,7 @@
 	}
 
 	async function handleSubmit(title: string, description: string) {
+		submitting = true;
 		try {
 			if (editingTodo) {
 				const updated = await apiUpdateTodo(editingTodo.id, title, description);
@@ -117,6 +119,8 @@
 			editingTodo = null;
 		} catch (e) {
 			console.error(e);
+		} finally {
+			submitting = false;
 		}
 	}
 
@@ -284,6 +288,7 @@
 <TodoModal
 	show={showModal}
 	{editingTodo}
+	{submitting}
 	onClose={() => {
 		showModal = false;
 		editingTodo = null;
