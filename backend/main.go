@@ -10,7 +10,8 @@ import (
 	"time"
 
 	"github.com/codetesla51/todoapi/internal/config"
-	"github.com/codetesla51/todoapi/internal/controllers"
+	"github.com/codetesla51/todoapi/internal/handlers"
+
 	"github.com/codetesla51/todoapi/internal/database"
 	"github.com/codetesla51/todoapi/internal/middleware"
 	"github.com/codetesla51/todoapi/internal/models"
@@ -45,8 +46,8 @@ func main() {
 
 	auth := r.Group("/auth")
 	{
-		auth.POST("/register", controllers.CreateUser)
-		auth.POST("/login", controllers.LoginUser)
+		auth.POST("/register", handlers.CreateUser)
+		auth.POST("/login", handlers.LoginUser)
 	}
 
 	protected := r.Group("/api")
@@ -54,13 +55,13 @@ func main() {
 	// Use User-based limiting for logged-in users
 	protected.Use(middleware.RateLimitByUser())
 	{
-		protected.GET("/profile", controllers.GetUser)
-		protected.POST("/todos", controllers.CreateTodo)
-		protected.GET("/todos", controllers.GetMyTodos)
-		protected.GET("/todos/:id", controllers.GetTodo)
-		protected.PUT("/todos/:id", controllers.UpdateTodo)
-		protected.PATCH("/todos/:id/status", controllers.UpdateTodoStatus)
-		protected.DELETE("/todos/:id", controllers.DeleteTodo)
+		protected.GET("/profile", handlers.GetUser)
+		protected.POST("/todos", handlers.CreateTodo)
+		protected.GET("/todos", handlers.GetMyTodos)
+		protected.GET("/todos/:id", handlers.GetTodo)
+		protected.PUT("/todos/:id", handlers.UpdateTodo)
+		protected.PATCH("/todos/:id/status", handlers.UpdateTodoStatus)
+		protected.DELETE("/todos/:id", handlers.DeleteTodo)
 	}
 
 	srv := &http.Server{
