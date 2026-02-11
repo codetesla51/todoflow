@@ -68,22 +68,25 @@ func main() {
 		Addr:    ":8080",
 		Handler: r,
 	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
-	log.Println("Server started on http://localhost:8080")
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("Shutting down server...")
+	log.Println("Server started on :8080")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	<-ctx.Done()
+	log.Println("Shutting down gracefully")
+
+	stop()
+	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+
+	if err := srv.Shutdown(ctxShutDown); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
 	}
 
 	log.Println("Server exiting")
