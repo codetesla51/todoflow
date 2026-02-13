@@ -162,7 +162,7 @@ I haven't done extensive load testing yet, but here's what I've observed:
 
 - **Rate limiter overhead**: ~2ms per request with Redis, ~8ms with PostgreSQL fallback
 - **Cache effectiveness**: Reduces database queries by roughly 80% on typical usage patterns
-- **Concurrent connections**: Handles 1000+ concurrent users without issues (tested with `hey`)
+- **Concurrent connections**: Handles 1000+ concurrent users without issues (tested with `apache benchmark`)
 
 These aren't scientific benchmarks, just rough observations from local testing.
 
@@ -182,9 +182,6 @@ I chose to fail-open on rate limiting (allow traffic when systems are down) beca
 
 Docker Compose helped, but simulating Redis failures and failover scenarios was still pretty manual. I'd probably add chaos engineering tools if I were doing this in production.
 
-**Graceful shutdown matters more than I expected**
-
-Implementing proper graceful shutdown with connection draining prevented a lot of weird edge cases during restarts. Letting in-flight requests finish before shutting down the server turned out to be way more important than I initially thought.
 
 ---
 
@@ -205,5 +202,3 @@ Implementing proper graceful shutdown with connection draining prevented a lot o
 - PostgreSQL (primary database)
 - Redis (caching + rate limiting)
 - Docker Compose (local orchestration)
-
----
