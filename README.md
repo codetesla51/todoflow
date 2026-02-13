@@ -207,11 +207,3 @@ Implementing proper graceful shutdown with connection draining prevented a lot o
 - Docker Compose (local orchestration)
 
 ---
-
-## License
-
-MIT - do whatever you want with it.
-
----
-
-Built by [Uthman Oladele](https://github.com/yourusername) while learning about distributed systems and production patterns.
