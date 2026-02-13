@@ -182,18 +182,9 @@ I chose to fail-open on rate limiting (allow traffic when systems are down) beca
 
 Docker Compose helped, but simulating Redis failures and failover scenarios was still pretty manual. I'd probably add chaos engineering tools if I were doing this in production.
 
----
+**Graceful shutdown matters more than I expected**
 
-## Future Ideas
-
-Things I might add if I keep working on this:
-
-- [ ] Circuit breaker pattern for external dependencies
-- [ ] OpenTelemetry tracing to visualize request flows
-- [ ] Prometheus metrics for monitoring
-- [ ] Graceful shutdown with connection draining
-- [ ] Background job queue for async operations
-- [ ] Proper load testing with results in the README
+Implementing proper graceful shutdown with connection draining prevented a lot of weird edge cases during restarts. Letting in-flight requests finish before shutting down the server turned out to be way more important than I initially thought.
 
 ---
 
